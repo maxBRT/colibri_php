@@ -17,7 +17,7 @@ interface PostRepositoryInterface
     /**
      * @return Collection<int, Post>
      */
-    public function listPending(int $limit): Collection;
+    public function listPending(?int $limit = null): Collection;
 
     public function markDone(string $id, ?string $description): void;
 }
