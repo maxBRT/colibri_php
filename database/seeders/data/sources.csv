@@ -1,0 +1,50 @@
+id,name,url,category
+xkcd,xkcd,https://xkcd.com/rss.xml,Humour
+hacker-news,Hacker News,https://news.ycombinator.com/rss,Technology
+wsj-opinion,WSJ Opinion,https://feeds.content.dowjones.io/public/rss/RSSOpinion,Opinion
+wsj-world,WSJ World News,https://feeds.content.dowjones.io/public/rss/RSSWorldNews,World
+wsj-us-business,WSJ US Business,https://feeds.content.dowjones.io/public/rss/WSJcomUSBusiness,Business
+wsj-markets,WSJ Markets,https://feeds.content.dowjones.io/public/rss/RSSMarketsMain,Markets
+wsj-wsjd,WSJ WSJD,https://feeds.content.dowjones.io/public/rss/RSSWSJD,Technology
+cnn-top,CNN Top Stories,http://rss.cnn.com/rss/cnn_topstories.rss,News
+cnn-world,CNN World,http://rss.cnn.com/rss/cnn_world.rss,World
+cnn-us,CNN US,http://rss.cnn.com/rss/cnn_us.rss,US
+cnn-money,CNN Money Latest,http://rss.cnn.com/rss/money_latest.rss,Finance
+cnn-tech,CNN Tech,http://rss.cnn.com/rss/cnn_tech.rss,Technology
+nytimes-world,NYTimes World,https://rss.nytimes.com/services/xml/rss/nyt/World.xml,World
+nytimes-us,NYTimes US,https://rss.nytimes.com/services/xml/rss/nyt/US.xml,US
+nytimes-politics,NYTimes Politics,https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml,Politics
+nytimes-business,NYTimes Business,https://rss.nytimes.com/services/xml/rss/nyt/Business.xml,Business
+nytimes-energy,NYTimes Energy & Environment,https://rss.nytimes.com/services/xml/rss/nyt/EnergyEnvironment.xml,Environment
+nytimes-small-business,NYTimes Small Business,https://rss.nytimes.com/services/xml/rss/nyt/SmallBusiness.xml,Business
+nytimes-economy,NYTimes Economy,https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml,Economy
+nytimes-technology,NYTimes Technology,https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml,Technology
+nytimes-sports,NYTimes Sports,https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml,Sports
+techcrunch,TechCrunch,https://techcrunch.com/feed/,Technology
+wired-business,Wired Business,https://www.wired.com/feed/category/business/latest/rss,Business
+wired-ai,Wired AI,https://www.wired.com/feed/tag/ai/latest/rss,Technology
+wired-culture,Wired Culture,https://www.wired.com/feed/category/culture/latest/rss,Culture
+wired-gear,Wired Gear,https://www.wired.com/feed/category/gear/latest/rss,Technology
+wired-ideas,Wired Ideas,https://www.wired.com/feed/category/ideas/latest/rss,Opinion
+wired-security,Wired Security,https://www.wired.com/feed/category/security/latest/rss,Security
+oreilly-radar,O'Reilly Radar,https://www.oreilly.com/radar/feed/,Technology
+oreilly-ai-ml,O'Reilly AI & ML,https://www.oreilly.com/radar/topics/ai-ml/feed/,Technology
+oreilly-ar-vr,O'Reilly AR/VR,https://www.oreilly.com/radar/topics/augmented-virtual-reality/feed/,Technology
+oreilly-blockchain,O'Reilly Blockchain,https://www.oreilly.com/radar/topics/blockchain/feed/,Technology
+oreilly-cloud,O'Reilly Cloud,https://www.oreilly.com/radar/topics/cloud/feed/,Technology
+oreilly-copyright,O'Reilly Copyright,https://www.oreilly.com/radar/topics/copyright/feed/,Business
+oreilly-emerging-tech,O'Reilly Emerging Tech,https://www.oreilly.com/radar/topics/emerging-tech/feed/,Technology
+oreilly-hardware,O'Reilly Hardware,https://www.oreilly.com/radar/topics/hardware/feed/,Technology
+oreilly-open-source,O'Reilly Open Source,https://www.oreilly.com/radar/topics/open-source/feed/,Technology
+oreilly-web,O'Reilly Web,https://www.oreilly.com/radar/topics/web/feed/,Technology
+oreilly-security,O'Reilly Security,https://www.oreilly.com/radar/topics/security/feed/,Security
+oreilly-software-architecture,O'Reilly Software Architecture,https://www.oreilly.com/radar/topics/software-architecture/feed/,Technology
+oreilly-software-development,O'Reilly Software Development,https://www.oreilly.com/radar/topics/software-development/feed/,Technology
+computerworld,Computerworld,https://www.computerworld.com/feed/,Technology
+entrepreneur,Entrepreneur,https://www.entrepreneur.com/latest.rss,Business
+economist-finance,Economist Finance & Economics,https://www.economist.com/finance-and-economics/rss.xml,Economy
+gamespot,GameSpot News,https://www.gamespot.com/feeds/news,Gaming
+indiegamesplus,IndieGamesPlus,https://indiegamesplus.com/feed/,Gaming
+bootdev,Boot.dev Blog,https://www.boot.dev/blog/index.xml,Technology
+jetbrains-go,JetBrains Go Blog,https://blog.jetbrains.com/go/feed/,Technology
+applied-go,Applied Go,https://appliedgo.net/index.xml,Technology
