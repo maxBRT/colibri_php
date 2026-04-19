@@ -32,12 +32,14 @@ class PostRepository implements PostRepositoryInterface
         return Post::query()->create($payload);
     }
 
-    public function listPending(int $limit): Collection
+    public function listPending(?int $limit = null): Collection
     {
         return Post::query()
             ->where('status', 'processing')
             ->orderBy('pub_date')
-            ->limit($limit)
+            ->when($limit !== null, function ($query) use ($limit) {
+                $query->limit($limit);
+            })
             ->get();
     }
 
