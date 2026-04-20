@@ -14,7 +14,6 @@ class PostRepository implements PostRepositoryInterface
         $sourceIds = $filters['sources'] ?? [];
 
         return Post::query()
-            ->with('source.logo')
             ->when($sourceIds !== [], function ($query) use ($sourceIds) {
                 $query->whereIn('source_id', $sourceIds);
             })

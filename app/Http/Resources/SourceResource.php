@@ -14,7 +14,7 @@ class SourceResource extends JsonResource
             'name' => $this->name,
             'url' => $this->url,
             'category' => $this->category,
-            'logo_url' => $this->logo?->url,
+            'logo_url' => $this->logo_url,
         ];
     }
 }

@@ -13,6 +13,11 @@ Schedule::call(function () {
         new GenerateDescriptionsJob,
         new SyncLogosJob,
     ])->dispatch();
-})->everyFourHours();
+})->name('rss-processing-chain')
+    ->everyFourHours()
+    ->withoutOverlapping()
+    ->onOneServer();
 
-Schedule::job(new CleanUpOutdatedPostJob)->daily();
+Schedule::job(new CleanUpOutdatedPostJob)
+    ->daily()
+    ->withoutOverlapping();
