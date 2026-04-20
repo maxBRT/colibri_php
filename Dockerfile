@@ -83,4 +83,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 # Expose port
 EXPOSE 80
 
-CMD ["app"]
+CMD ["php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=80"]
