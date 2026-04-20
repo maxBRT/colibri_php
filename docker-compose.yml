@@ -16,7 +16,7 @@ secrets:
 
 configs:
     nginx_conf:
-        external: true
+        file: ./nginx/conf.d/default.conf
 
 services:
     nginx-proxy:
