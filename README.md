@@ -15,7 +15,6 @@ By handling the heavy lifting of polling and content normalization, Colibri lets
 - **AI-Powered Enrichment**: Uses LLMs to analyze content and generate concise, meaningful descriptions
 - **REST API**: Clean, documented endpoints for sources, posts, and categories
 - **Pagination**: Built-in pagination for posts endpoint
-- **SQLite Storage**: Simple, lightweight database setup
 
 ## Quick Start
 
@@ -53,13 +52,7 @@ php artisan serve
 
 ## Documentation
 
-Full API documentation is available in the `docs/` directory. To build and view locally:
-
-```bash
-cd docs
-npm install
-npm run start
-```
+Full API documentation is available in the [docs](https://colibri-rss.com). 
 
 ## Development
 
@@ -71,7 +64,7 @@ php artisan test --compact
 vendor/bin/pint
 ```
 
-See [docs/docs/contribute/contribute-code.md](docs/docs/contribute/contribute-code.md) for contribution guidelines.
+See [the official docs](https://colibri-rss.com) for contribution guidelines.
 
 ## License
 
