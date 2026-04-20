@@ -17,6 +17,7 @@ class HealthController extends Controller
             return response()->json([
                 'status' => 'ok',
                 'checks' => [
+                    'app' => 'ok',
                     'database' => 'ok',
                 ],
             ]);
@@ -24,6 +25,7 @@ class HealthController extends Controller
             return response()->json([
                 'status' => 'degraded',
                 'checks' => [
+                    'app' => 'ok',
                     'database' => 'error',
                 ],
             ], 503);

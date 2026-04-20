@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Logo;
 use App\Models\Source;
 use App\Repositories\Contracts\SourceRepositoryInterface;
 use Illuminate\Support\Collection;
@@ -11,7 +12,12 @@ class SourceRepository implements SourceRepositoryInterface
     public function list(?array $categories): Collection
     {
         return Source::query()
-            ->with('logo')
+            ->addSelect([
+                'logo_url' => Logo::query()
+                    ->select('url')
+                    ->whereColumn('source_id', 'sources.id')
+                    ->limit(1),
+            ])
             ->when($categories !== null && $categories !== [], function ($query) use ($categories) {
                 $query->whereIn('category', $categories);
             })
