@@ -36,11 +36,11 @@ services:
         build: .
         secrets:
             - app_key
-            - gemini_api_key
-            - aws_access_key
-            - aws_secret_key
-            - aws_bucket
-            - aws_region
+            - gemini-api-key
+            - aws-access-key
+            - aws-secret-key
+            - aws-bucket
+            - aws-region
         env_file:
             - .env.stack
         volumes:
