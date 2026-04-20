@@ -12,17 +12,7 @@ services:
       - .env
     networks:
       - dokploy-network
-    labels:
-      - "traefik.enable=true"
-      # Catch traffic for the specific subdomain
-      - "traefik.http.routers.colibri-api.rule=Host(`api.colibri-rss.com`)"
-      # Force the connection over HTTPS (port 443)
-      - "traefik.http.routers.colibri-api.entrypoints=web,websecure"
-      # Request the Let's Encrypt certificate automatically
-      - "traefik.http.routers.colibri-api.tls.certresolver=letsencrypt"
-      # Tell Traefik which internal port your app listens on
-      - "traefik.http.services.colibri-api.loadbalancer.server.port=80"
-      - "traefik.docker.network=dokploy-network"
+    
     volumes:
       - sqlite_data:/app/database
       - storage:/app/storage
@@ -107,17 +97,6 @@ services:
     build: ./docs
     networks:
       - dokploy-network
-    labels:
-      - "traefik.enable=true"
-      # Catch traffic for the specific subdomain
-      - "traefik.http.routers.colibri-api.rule=Host(`colibri-rss.com`)"
-      # Force the connection over HTTPS (port 443)
-      - "traefik.http.routers.colibri-api.entrypoints=websecure"
-      # Request the Let's Encrypt certificate automatically
-      - "traefik.http.routers.colibri-api.tls.certresolver=letsencrypt"
-      # Tell Traefik which internal port your app listens on
-      - "traefik.http.services.colibri-api.loadbalancer.server.port=3000"
-      - "traefik.docker.network=dokploy-network"
 
     deploy:
       replicas: 1
