@@ -52,4 +52,11 @@ class PostRepository implements PostRepositoryInterface
                 'description' => $description,
             ]);
     }
+
+    public function deleteOutdatedPosts(): void
+    {
+        Post::query()
+            ->where('pub_date', '<', now()->subDays(30))
+            ->delete();
+    }
 }

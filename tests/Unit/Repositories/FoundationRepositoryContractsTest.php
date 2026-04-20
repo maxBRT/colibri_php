@@ -25,6 +25,7 @@ test('repository interfaces exist with blueprint methods', function () {
         ->and($post->hasMethod('paginate'))->toBeTrue()
         ->and($post->hasMethod('findByGuid'))->toBeTrue()
         ->and($post->hasMethod('insert'))->toBeTrue()
+        ->and($post->hasMethod('deleteOutdatedPosts'))->toBeTrue()
         ->and($post->hasMethod('listPending'))->toBeTrue()
         ->and($post->hasMethod('markDone'))->toBeTrue()
         ->and($logo->hasMethod('findBySourceId'))->toBeTrue()
