@@ -7,11 +7,11 @@ secrets:
         external: true
     aws-access-key:
         external: true
-    aws-secret-key:
+    aws-secret-access-key:
         external: true
-    aws-bucket:
+    logo-s3-bucket:
         external: true
-    aws-region:
+    logo-s3-region:
         external: true
 
 configs:
@@ -38,9 +38,9 @@ services:
             - app_key
             - google-api-key
             - aws-access-key
-            - aws-secret-key
-            - aws-bucket
-            - aws-region
+            - aws-secret-access-key
+            - logo-s3-bucket
+            - logo-s3-region
         env_file:
             - .env.stack
         volumes:
@@ -66,9 +66,9 @@ services:
             - app_key
             - google-api-key
             - aws-access-key
-            - aws-secret-key
-            - aws-bucket
-            - aws-region
+            - aws-secret-access-key
+            - logo-s3-bucket
+            - logo-s3-region
         env_file:
             - .env.stack
         volumes:
@@ -92,9 +92,9 @@ services:
             - app_key
             - google-api-key
             - aws-access-key
-            - aws-secret-key
-            - aws-bucket
-            - aws-region
+            - aws-secret-access-key
+            - logo-s3-bucket
+            - logo-s3-region
         env_file:
             - .env.stack
         volumes:
