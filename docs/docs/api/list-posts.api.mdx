@@ -1,0 +1,69 @@
+---
+id: list-posts
+title: "List posts"
+description: "Retrieve posts from every source or constrain the results to a subset of source IDs."
+sidebar_label: "List posts"
+hide_title: true
+hide_table_of_contents: true
+api: eJy1V9tu2zgQ/RVCz77I2Tjb+i1os4UBdxvk8rJJEFDSWGJDkSpJOTEM/3tnKFmWbK/dbbBAEEu8zBzOnJlDrQLHUxtMHoJrbZ0NnnpBAjY2onBCq2AS3IAzAhbACppnc6Nzhq9myawuTQxMGxZrZZ3hQjGXATNgS4lLnWac2TKy4Jieb5ZPP9tB0AsKbngODgz5XgUKX9BZtcbivCDfP0r0E+wium0MkYu5kGiFRcsBu4ECuKPBWOeRUMByBCIK2Xg18KMUBpJgMufSQi+wcQY5DyarwC0LQsCN4eRSOMhtaxzPJ1QarNe4xy0lDc21yXElvBVSJzjgTAnrXnOWgqdw/CDXuIKpMo8QPxpjuEMoTpO/hlUoBykYXJsLJfIyDyYj8jHneGx8XrfRgHk+jejvCgxmy5+f4S5CBe/Bk/O3+jkMW+jOwvX6iazaAtkDPtZnYUg/XUzfou8QO+KYQ4ZhEmom+kyxV+GyVuAYcoon3HFCTFtAOTLJi0KK2C8Zfrdkd7WPX3tPnaM+BN6ZJ+zGB9VIYTTGxokKd7XmNIkOOhAJDjjhJOVGCvWCP2npR6tyeMbnPZc4tkfO3WzeK4FpZiLBIIi5qFlGJUqAB567PC88mcfjED6ch2Efzj5G/fNRct7nf44u+ufnFxfj8TnOYG7WG6AnXd/RMlaUkRQ2gwTL0/udAz7jQRaIyXQBTJUzOiljn0Us4Rk2iAVI9lUkiYRXboDc+/gc8E61yDHTQWnEHphPXGmF2Zfs/mZG5CYoHEMZS+iCyJwr7GQ4rEcG2EeGkdTpUFZo+nkHTcfNqZBcTvspKDDcYQxsmecce+gxMDPgRrFMvzax2HqnIDrkkmVL5Ahr0ZuBSgqNpYgNb10z6TeYgvkRCwTq+32TOpxG0F/up59ZzSSiOIX1XXFEnjxj0R7kVZNZWtB3Ioc99N+MoNqUFd/qMNBK69D90RifhWcX/fCP/ll4F36chCH+/UOItpV3MnYUi8pDrXAuE9ZXGItAapWSTO2Eh8cvYPoKXq135rgrD4jNnl4YjeJoqQVWWzaOm3JW1GexZyEH2gYioG4y50KCbyVbJNv59ba4/VXAD7Sa3qk2WWlLS2acdlxufv2gPdA5ae0hBdmp4NIY5J7XoloxOxEdrVuuT5s7JnONTRSozSFOW7yjdRst39jtQhw39upg/Herfl/H6odO2rbZ2s3mTFh3U0stTtL0+JDY3iu8zmB2qUWBwWte32JTYGCMNu+S1G7asTRtN1UN5TuKAIbKukJSgeic7Koe8edB5c80cjFIwTvkLsOX4WI03Eh4Zae6cJZGtvoULwT2KCkiI/rGWt+vDpXfRp8qSwHdr7aG0I7UqDIZupt8QL3cNzGjeeyt2AJ1kROjN5ae6F421z4i9ek+VYDYze0tu7yeojFCXxkaDcJBuGf+5ur2jpY2Ot82wdPUQModJpL9BS7O/Gh94+41fcTS0/JRFf600GNcJX4SUw2pxm8By4Dj7rrbtXocmoWELmb0DTDHmx0q/6PipdPYwUl/5bL+dJiTaGX4z3rzoIyI6Zrgb3OXU7YrlOh08Kj8/SgGovCkudh+nd6xWT2KMWwUrJqquhgeK+eqtYnKgW1osaPiDcX/r0+fmvEO3tywkLiVNMDTaFWz9iFYjIJefa1EZhCjaHS1iriFeyPXaxqu7vDE5kRYHsnW3fxfz/SOj6eDuF9g2fluW3BZ0ipfG78O6/in0BHPtdj8pttjQnDM6Vblto6f6MUI8ow5ecLFGfCEiIgJqvZdxjEUrrVrr4eSlaaRfbki/v4ELAtgzQ==
+sidebar_class_name: "get api-method"
+info_path: docs/api/colibri-rss-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"List posts"}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"get"}
+  path={"/v1/posts"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Retrieve posts from every source or constrain the results to a subset of source IDs.
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./list-posts.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./list-posts.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./list-posts.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

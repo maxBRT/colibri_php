@@ -1,0 +1,1 @@
+{"parameters":[{"name":"category","in":"query","description":"Case-insensitive category identifier. Repeat to match multiple categories.","required":false,"schema":{"type":"array","items":{"type":"string"}},"style":"form","explode":true}]}

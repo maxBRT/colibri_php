@@ -1,0 +1,135 @@
+version: "3.8"
+
+secrets:
+    app_key:
+        external: true
+    gemini_api_key:
+        external: true
+    aws_access_key:
+        external: true
+    aws_secret_key:
+        external: true
+    aws_bucket:
+        external: true
+    aws_region:
+        external: true
+
+configs:
+    nginx_conf:
+        external: true
+
+services:
+    nginx-proxy:
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /etc/letsencrypt:/etc/letsencrypt:ro
+        configs:
+            - source: nginx_conf
+              target: /etc/nginx/conf.d/default.conf
+
+    app:
+        image: maximebourret/colibri-api:latest
+        build: .
+        secrets:
+            - app_key
+            - gemini_api_key
+            - aws_access_key
+            - aws_secret_key
+            - aws_bucket
+            - aws_region
+        env_file:
+            - .env.stack
+        volumes:
+            - sqlite_data:/app/database
+            - storage:/app/storage
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:80/api/health"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 10s
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+            update_config:
+                order: start-first
+
+    scheduler:
+        image: maximebourret/colibri-api:latest
+        command: scheduler
+        secrets:
+            - app_key
+            - gemini_api_key
+            - aws_access_key
+            - aws_secret_key
+            - aws_bucket
+            - aws_region
+        env_file:
+            - .env.stack
+        volumes:
+            - sqlite_data:/app/database
+            - storage:/app/storage
+        healthcheck:
+            test: ["CMD-SHELL", "pgrep -f 'schedule:work' || exit 1"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 10s
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+
+    worker:
+        image: maximebourret/colibri-api:latest
+        command: worker
+        secrets:
+            - app_key
+            - gemini_api_key
+            - aws_access_key
+            - aws_secret_key
+            - aws_bucket
+            - aws_region
+        env_file:
+            - .env.stack
+        volumes:
+            - sqlite_data:/app/database
+            - storage:/app/storage
+        healthcheck:
+            test: ["CMD-SHELL", "pgrep -f 'queue:work' || exit 1"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 10s
+        deploy:
+            replicas: 2
+            restart_policy:
+                condition: on-failure
+
+    certbot:
+        image: certbot/certbot
+        volumes:
+            - certs:/etc/letsencrypt
+            - certs-data:/var/www/certbot
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+    docs:
+        image: maximebourret/colibri-docs:latest
+        build: ./docs
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: any
+            update_config:
+                order: start-first
+
+volumes:
+    sqlite_data:
+    storage:
+    certs:
+    certs-data:
