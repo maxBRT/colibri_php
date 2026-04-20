@@ -18,6 +18,7 @@ RUN apk add --no-cache \
 # Install PHP extensions
 RUN install-php-extensions \
     pdo \
+    pcntl \
     pdo_sqlite \
     sqlite3 \
     mbstring \
