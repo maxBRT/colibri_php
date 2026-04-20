@@ -3,7 +3,7 @@ version: "3.8"
 secrets:
     app_key:
         external: true
-    gemini-api-key:
+    google-api-key:
         external: true
     aws-access-key:
         external: true
@@ -36,7 +36,7 @@ services:
         build: .
         secrets:
             - app_key
-            - gemini-api-key
+            - google-api-key
             - aws-access-key
             - aws-secret-key
             - aws-bucket
@@ -64,7 +64,7 @@ services:
         command: scheduler
         secrets:
             - app_key
-            - gemini-api-key
+            - google-api-key
             - aws-access-key
             - aws-secret-key
             - aws-bucket
@@ -90,7 +90,7 @@ services:
         command: worker
         secrets:
             - app_key
-            - gemini-api-key
+            - google-api-key
             - aws-access-key
             - aws-secret-key
             - aws-bucket
