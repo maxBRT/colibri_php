@@ -74,10 +74,11 @@ ENV DB_DATABASE=/app/database/database.sqlite
 ENV SESSION_DRIVER=database
 ENV CACHE_STORE=database
 ENV QUEUE_CONNECTION=database
+ENV SERVER_NAME=":80"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:80/api/health || exit 1
+    CMD curl -f http://localhost:80/health || exit 1
 
 # Expose port
 EXPOSE 80
