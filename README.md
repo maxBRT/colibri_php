@@ -1,12 +1,28 @@
-# Colibri RSS
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+    <img src="images/colibri_logo.png" alt="Logo" width="400" height="400">
+</div>
 
-A REST API that bridges the gap between traditional RSS feeds and modern application requirements.
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-## About
+Dealing with RSS feed is messy and unconsistent. Colibri aims to offer a simple but consistent JSON API to build around RSS feed.
 
-While RSS remains the backbone of open-form content on the web, its implementation is often fragmented and inconsistent. Colibri offers a consistent, unified interface that allows developers to integrate feeds or specific posts from various sources directly into their applications without the headache of managing multiple XML formats or custom parsers.
+How ?:
+* We fetch from a list of RSS feeds every 4 hours and save the latest posts
+* We generate incosistant field like description with AI agents
+* We expose everything through a versionned REST API so your apps don't break
 
-By handling the heavy lifting of polling and content normalization, Colibri lets you focus on building features, not infrastructure.
+Make sure to check out the [docs](https://colibri-rss.com) !
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [ ] Grow the list of registered feed
+- [ ] Add support for user facing feed registration
+
+See the [open issues](https://github.com/maxbrt/colibri_php) for a full list of proposed features (and known issues).
 
 ## Features
 
@@ -56,16 +72,9 @@ Full API documentation is available in the [docs](https://colibri-rss.com).
 
 ## Development
 
-```bash
-# Run tests
-php artisan test --compact
-
-# Check code style
-vendor/bin/pint
-```
-
 See [the official docs](https://colibri-rss.com) for contribution guidelines.
 
+<!-- LICENSE -->
 ## License
 
-MIT License
+Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
