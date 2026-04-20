@@ -75,10 +75,6 @@ ENV SESSION_DRIVER=database
 ENV CACHE_STORE=database
 ENV QUEUE_CONNECTION=database
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:80/api/health || exit 1
@@ -86,6 +82,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 # Expose port
 EXPOSE 80
 
-# Use entrypoint for secret handling
-ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["app"]
