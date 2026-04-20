@@ -20,4 +20,6 @@ interface PostRepositoryInterface
     public function listPending(?int $limit = null): Collection;
 
     public function markDone(string $id, ?string $description): void;
+
+    public function deleteOutdatedPosts(): void;
 }
