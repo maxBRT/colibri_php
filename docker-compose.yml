@@ -93,6 +93,14 @@ services:
       update_config:
         order: stop-first
 
+  migrator:
+    image: maximebourret/colibri-api:latest
+    command: php artisan migrate --force
+    volumes:
+      - sqlite_data:/app/database
+    networks:
+      - dokploy-network
+
   docs:
     image: maximebourret/colibri-docs:latest
     build: ./docs
