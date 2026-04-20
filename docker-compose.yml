@@ -17,7 +17,7 @@ services:
       # Catch traffic for the specific subdomain
       - "traefik.http.routers.colibri-api.rule=Host(`api.colibri-rss.com`)"
       # Force the connection over HTTPS (port 443)
-      - "traefik.http.routers.colibri-api.entrypoints=websecure"
+      - "traefik.http.routers.colibri-api.entrypoints=web,websecure"
       # Request the Let's Encrypt certificate automatically
       - "traefik.http.routers.colibri-api.tls.certresolver=letsencrypt"
       # Tell Traefik which internal port your app listens on
