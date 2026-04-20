@@ -3,15 +3,15 @@ version: "3.8"
 secrets:
     app_key:
         external: true
-    gemini_api_key:
+    gemini-api-key:
         external: true
-    aws_access_key:
+    aws-access-key:
         external: true
-    aws_secret_key:
+    aws-secret-key:
         external: true
-    aws_bucket:
+    aws-bucket:
         external: true
-    aws_region:
+    aws-region:
         external: true
 
 configs:
