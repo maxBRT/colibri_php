@@ -75,6 +75,10 @@ ENV SESSION_DRIVER=database
 ENV CACHE_STORE=database
 ENV QUEUE_CONNECTION=database
 
+# Trust proxy headers (nginx handles SSL termination)
+ENV SERVER_NAME=api.colibri-rss.com
+ENV CADDY_GLOBAL_OPTIONS="auto_https off"
+
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
