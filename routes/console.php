@@ -1,8 +1,18 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Jobs\CleanUpOutdatedPostJob;
+use App\Jobs\FetchRssJob;
+use App\Jobs\GenerateDescriptionsJob;
+use App\Jobs\SyncLogosJob;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::call(function () {
+    Bus::chain([
+        new FetchRssJob,
+        new GenerateDescriptionsJob,
+        new SyncLogosJob,
+    ])->dispatch();
+})->everyFourHours();
+
+Schedule::job(new CleanUpOutdatedPostJob)->daily();
