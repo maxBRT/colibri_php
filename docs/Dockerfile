@@ -1,22 +1,16 @@
-### Builder stage: install deps and generate static bundle
 FROM node:20-alpine AS builder
-
 WORKDIR /app
-
-ENV NODE_ENV=production
-
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm ci
-
 COPY . .
 RUN npm run build
 
-### Runtime stage: serve static assets with nginx
-FROM nginx:1.27-alpine AS runtime
+FROM node:20-alpine AS runtime
+WORKDIR /app
+# Install a lightweight static server
+RUN npm install -g serve
+COPY --from=builder /app/build ./build
 
-# Remove default nginx assets to avoid leaking placeholder page
-RUN rm -rf /usr/share/nginx/html/*
-
-COPY --from=builder /app/build /usr/share/nginx/html
-
-CMD ["nginx", "-g", "daemon off;"]
+# Dokploy will point Traefik to this port
+EXPOSE 3000
+CMD ["serve", "-s", "build", "-l", "3000"]
