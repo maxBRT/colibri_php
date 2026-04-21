@@ -12,6 +12,6 @@ RUN npm install -g serve
 COPY --from=builder /app/build ./build
 
 # Dokploy will point Traefik to this port
-EXPOSE 80
+EXPOSE 3000
 
-CMD ["serve", "-s", "build", "-l", "80", "-a", "0.0.0.0"]
+CMD ["serve", "-s", "build", "-l", "3000"]
