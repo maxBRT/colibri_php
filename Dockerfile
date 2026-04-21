@@ -16,13 +16,14 @@ RUN apk add --no-cache \
     sqlite \
     sqlite-dev \
     && rm -rf /var/cache/apk/*
+    
+RUN docker-php-ext-install pdo pdo_pgsql
 
 # Install PHP extensions
 RUN install-php-extensions \
     pdo \
     pcntl \
     pdo_pgsql \
-    sqlite3 \
     mbstring \
     xml \
     ctype \
@@ -67,16 +68,7 @@ RUN chown -R www-data:www-data /app \
     && chown www-data:www-data database/database.sqlite \
     && chmod 755 database/database.sqlite
 
-# Set environment for production
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-ENV LOG_CHANNEL=stderr
-ENV LOG_LEVEL=warning
-ENV DB_CONNECTION=sqlite
-ENV DB_DATABASE=/app/database/database.sqlite
-ENV SESSION_DRIVER=database
-ENV CACHE_STORE=database
-ENV QUEUE_CONNECTION=database
+
 ENV SERVER_NAME=":80"
 
 # Health check
