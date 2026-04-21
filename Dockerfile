@@ -59,13 +59,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 # Set proper permissions
 RUN chown -R www-data:www-data /app \
     && chmod -R 755 /app/storage \
-    && chmod -R 755 /app/bootstrap/cache \
-    && mkdir -p database && touch database/database.sqlite \
-    && chown www-data:www-data database/database.sqlite \
-    && chmod 755 database/database.sqlite
+    && chmod -R 755 /app/bootstrap/cache
 
 
-ENV SERVER_NAME=":80"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
