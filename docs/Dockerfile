@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+
+RUN npm run gen-api
 RUN npm run build
 
 FROM node:20-alpine AS runtime

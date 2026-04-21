@@ -33,43 +33,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CategoryListResponse'
+                $ref: "#/components/schemas/CategoryListResponse"
         "500":
-          $ref: '#/components/responses/InternalError'
+          $ref: "#/components/responses/InternalError"
   /v1/sources:
     get:
       tags: [Sources]
       summary: List sources
       description: Fetch every registered RSS source with optional category filtering.
       parameters:
-        - $ref: '#/components/parameters/CategoryFilter'
+        - $ref: "#/components/parameters/CategoryFilter"
       responses:
         "200":
           description: Object containing matching RSS sources.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SourceListResponse'
+                $ref: "#/components/schemas/SourceListResponse"
         "500":
-          $ref: '#/components/responses/InternalError'
+          $ref: "#/components/responses/InternalError"
   /v1/posts:
     get:
       tags: [Posts]
       summary: List posts
       description: Retrieve posts from every source or constrain the results to a subset of source IDs.
       parameters:
-        - $ref: '#/components/parameters/SourceFilter'
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: "#/components/parameters/SourceFilter"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
       responses:
         "200":
           description: Object containing posts array with pagination metadata.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostListResponse'
+                $ref: "#/components/schemas/PostListResponse"
         "500":
-          $ref: '#/components/responses/InternalError'
+          $ref: "#/components/responses/InternalError"
   /health:
     get:
       tags: [Health]
@@ -81,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                $ref: "#/components/schemas/HealthResponse"
 components:
   parameters:
     CategoryFilter:
@@ -131,7 +131,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
   schemas:
     CategoryListResponse:
       type: object
@@ -153,7 +153,7 @@ components:
         sources:
           type: array
           items:
-            $ref: '#/components/schemas/Source'
+            $ref: "#/components/schemas/Source"
     Source:
       type: object
       required: [id, name, url, category]
@@ -187,9 +187,9 @@ components:
         posts:
           type: array
           items:
-            $ref: '#/components/schemas/Post'
+            $ref: "#/components/schemas/Post"
         pagination:
-          $ref: '#/components/schemas/Pagination'
+          $ref: "#/components/schemas/Pagination"
     Post:
       type: object
       required: [id, title, link, guid, source_id]

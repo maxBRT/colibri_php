@@ -1,13 +1,10 @@
 version: "3.8"
 
-# Production Docker Compose for Dockploy-managed deployment
-# This file is designed to work with a self-hosted Dockploy server
+# Production Docker Compose for Dokploy-managed deployment
+# Images are built in CI/CD pipeline and pulled from DockerHub
 services:
   app:
     image: maximebourret/colibri-api:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
     env_file:
       - .env
     networks:
@@ -86,7 +83,9 @@ services:
 
   migrator:
     image: maximebourret/colibri-api:latest
-    command: php artisan migrate --force
+    command: >
+      sh -c "php artisan migrate --force &&
+             php artisan db:seed --force"
     volumes:
       - sqlite_data:/app/database
     networks:
@@ -94,7 +93,6 @@ services:
 
   docs:
     image: maximebourret/colibri-docs:latest
-    build: ./docs
     networks:
       - dokploy-network
     labels:
@@ -111,6 +109,7 @@ services:
         order: start-first
         parallelism: 1
         delay: 10s
+
 networks:
   dokploy-network:
     external: true
