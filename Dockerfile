@@ -7,7 +7,6 @@ FROM dunglas/frankenphp:1-php8.4-alpine
 RUN apk add --no-cache \
     curl \
     git \
-    postgresql-dev \
     unzip \
     libzip-dev \
     oniguruma-dev \
@@ -15,8 +14,6 @@ RUN apk add --no-cache \
     sqlite \
     sqlite-dev \
     && rm -rf /var/cache/apk/*
-    
-RUN docker-php-ext-install pdo pdo_pgsql
 
 # Install PHP extensions
 RUN install-php-extensions \
