@@ -61,7 +61,9 @@ RUN chown -R www-data:www-data /app \
     && chmod -R 755 /app/storage \
     && chmod -R 755 /app/bootstrap/cache
 
-
+ENV DB_CONNECTION=pgsql
+ENV DB_CACHE_CONNECTION=pgsql
+ENV DB_CACHE_LOCK_CONNECTION=pgsql
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
