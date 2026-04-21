@@ -19,7 +19,7 @@ RUN apk add --no-cache \
 RUN install-php-extensions \
     pdo \
     pcntl \
-    pdo_sqlite \
+    pdo_pgsql \
     sqlite3 \
     mbstring \
     xml \
