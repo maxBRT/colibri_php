@@ -1,14 +1,17 @@
 <?php
 
+use App\Jobs\GenerateDescriptionForPostJob;
 use App\Jobs\GenerateDescriptionsJob;
 use App\Models\Post;
 use App\Models\Source;
-use App\Services\EnrichmentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 
 uses(RefreshDatabase::class);
 
-test('it marks pending post done and stores description on successful enrichment', function () {
+test('it dispatches individual jobs for each pending post', function () {
+    Queue::fake();
+
     $source = Source::query()->create([
         'id' => 'source-tech',
         'name' => 'Tech Source',
@@ -16,8 +19,8 @@ test('it marks pending post done and stores description on successful enrichment
         'category' => 'tech',
     ]);
 
-    $post = Post::query()->create([
-        'title' => 'Pending post',
+    $postA = Post::query()->create([
+        'title' => 'Pending post A',
         'description' => null,
         'link' => 'https://example.test/posts/1',
         'guid' => 'pending-guid-1',
@@ -26,28 +29,8 @@ test('it marks pending post done and stores description on successful enrichment
         'status' => 'processing',
     ]);
 
-    $service = Mockery::mock(EnrichmentService::class);
-    $service->shouldReceive('generateSummary')->once()->with(Mockery::type(Post::class))->andReturn('AI summary for pending post.');
-    app()->instance(EnrichmentService::class, $service);
-
-    app()->call([new GenerateDescriptionsJob(limit: 10), 'handle']);
-
-    $post->refresh();
-
-    expect($post->status)->toBe('done')
-        ->and($post->description)->toBe('AI summary for pending post.');
-});
-
-test('it keeps post processing with null description when enrichment fails after retries are exhausted', function () {
-    $source = Source::query()->create([
-        'id' => 'source-news',
-        'name' => 'News Source',
-        'url' => 'https://example.test/news.xml',
-        'category' => 'news',
-    ]);
-
-    $post = Post::query()->create([
-        'title' => 'Pending fail-soft post',
+    $postB = Post::query()->create([
+        'title' => 'Pending post B',
         'description' => null,
         'link' => 'https://example.test/posts/2',
         'guid' => 'pending-guid-2',
@@ -56,27 +39,28 @@ test('it keeps post processing with null description when enrichment fails after
         'status' => 'processing',
     ]);
 
-    $service = Mockery::mock(EnrichmentService::class);
-    $service->shouldReceive('generateSummary')->once()->andReturn(null);
-    app()->instance(EnrichmentService::class, $service);
-
     app()->call([new GenerateDescriptionsJob(limit: 10), 'handle']);
 
-    $post->refresh();
-
-    expect($post->status)->toBe('processing')
-        ->and($post->description)->toBeNull();
+    Queue::assertPushed(GenerateDescriptionForPostJob::class, 2);
+    Queue::assertPushed(GenerateDescriptionForPostJob::class, function (GenerateDescriptionForPostJob $job) use ($postA) {
+        return $job->post->id === $postA->id;
+    });
+    Queue::assertPushed(GenerateDescriptionForPostJob::class, function (GenerateDescriptionForPostJob $job) use ($postB) {
+        return $job->post->id === $postB->id;
+    });
 });
 
-test('it processes only pending posts and respects limit', function () {
+test('it does not dispatch jobs for already done posts', function () {
+    Queue::fake();
+
     $source = Source::query()->create([
-        'id' => 'source-limit',
-        'name' => 'Limit Source',
-        'url' => 'https://example.test/limit.xml',
-        'category' => 'news',
+        'id' => 'source-tech',
+        'name' => 'Tech Source',
+        'url' => 'https://example.test/rss.xml',
+        'category' => 'tech',
     ]);
 
-    $donePost = Post::query()->create([
+    Post::query()->create([
         'title' => 'Already done',
         'description' => 'Existing description',
         'link' => 'https://example.test/posts/done',
@@ -86,7 +70,22 @@ test('it processes only pending posts and respects limit', function () {
         'status' => 'done',
     ]);
 
-    $pendingA = Post::query()->create([
+    app()->call([new GenerateDescriptionsJob(limit: 10), 'handle']);
+
+    Queue::assertNothingPushed();
+});
+
+test('it respects the limit when dispatching jobs', function () {
+    Queue::fake();
+
+    $source = Source::query()->create([
+        'id' => 'source-limit',
+        'name' => 'Limit Source',
+        'url' => 'https://example.test/limit.xml',
+        'category' => 'news',
+    ]);
+
+    Post::query()->create([
         'title' => 'Pending A',
         'description' => null,
         'link' => 'https://example.test/posts/a',
@@ -96,7 +95,7 @@ test('it processes only pending posts and respects limit', function () {
         'status' => 'processing',
     ]);
 
-    $pendingB = Post::query()->create([
+    Post::query()->create([
         'title' => 'Pending B',
         'description' => null,
         'link' => 'https://example.test/posts/b',
@@ -106,7 +105,7 @@ test('it processes only pending posts and respects limit', function () {
         'status' => 'processing',
     ]);
 
-    $pendingC = Post::query()->create([
+    Post::query()->create([
         'title' => 'Pending C',
         'description' => null,
         'link' => 'https://example.test/posts/c',
@@ -116,87 +115,13 @@ test('it processes only pending posts and respects limit', function () {
         'status' => 'processing',
     ]);
 
-    $service = Mockery::mock(EnrichmentService::class);
-    $service->shouldReceive('generateSummary')->times(2)->andReturn('Limited summary');
-    app()->instance(EnrichmentService::class, $service);
-
     app()->call([new GenerateDescriptionsJob(limit: 2), 'handle']);
 
-    $donePost->refresh();
-    $pendingA->refresh();
-    $pendingB->refresh();
-    $pendingC->refresh();
-
-    expect($donePost->status)->toBe('done')
-        ->and($donePost->description)->toBe('Existing description')
-        ->and(collect([$pendingA, $pendingB, $pendingC])->where('status', 'done'))->toHaveCount(2)
-        ->and(collect([$pendingA, $pendingB, $pendingC])->where('status', 'processing'))->toHaveCount(1);
+    Queue::assertPushed(GenerateDescriptionForPostJob::class, 2);
 });
 
-test('it continues processing batch when one post enrichment throws', function () {
-    $source = Source::query()->create([
-        'id' => 'source-errors',
-        'name' => 'Error Source',
-        'url' => 'https://example.test/errors.xml',
-        'category' => 'news',
-    ]);
-
-    $postOne = Post::query()->create([
-        'title' => 'First pending',
-        'description' => null,
-        'link' => 'https://example.test/posts/one',
-        'guid' => 'pending-one',
-        'pub_date' => now()->subMinutes(2),
-        'source_id' => $source->id,
-        'status' => 'processing',
-    ]);
-
-    $postTwo = Post::query()->create([
-        'title' => 'Second pending',
-        'description' => null,
-        'link' => 'https://example.test/posts/two',
-        'guid' => 'pending-two',
-        'pub_date' => now()->subMinute(),
-        'source_id' => $source->id,
-        'status' => 'processing',
-    ]);
-
-    $postThree = Post::query()->create([
-        'title' => 'Third pending',
-        'description' => null,
-        'link' => 'https://example.test/posts/three',
-        'guid' => 'pending-three',
-        'pub_date' => now(),
-        'source_id' => $source->id,
-        'status' => 'processing',
-    ]);
-
-    $service = Mockery::mock(EnrichmentService::class);
-    $service->shouldReceive('generateSummary')->andReturn('Summary one', null, 'Summary three');
-    app()->instance(EnrichmentService::class, $service);
-
-    app()->call([new GenerateDescriptionsJob(limit: 10), 'handle']);
-
-    $postOne->refresh();
-    $postTwo->refresh();
-    $postThree->refresh();
-
-    expect($postOne->status)->toBe('done')
-        ->and($postOne->description)->toBe('Summary one')
-        ->and($postTwo->status)->toBe('processing')
-        ->and($postTwo->description)->toBeNull()
-        ->and($postThree->status)->toBe('done')
-        ->and($postThree->description)->toBe('Summary three');
-});
-
-test('it defines enrichment queue and retry configuration', function () {
+test('it defines enrichment queue configuration', function () {
     $job = new GenerateDescriptionsJob(limit: 25);
 
-    expect($job->queue)->toBe('enrichment')
-        ->and($job->tries)->toBeInt()
-        ->and($job->tries)->toBeGreaterThan(0)
-        ->and($job->backoff)->toBeArray()
-        ->and($job->backoff)->not->toBeEmpty()
-        ->and($job->timeout)->toBeInt()
-        ->and($job->timeout)->toBeGreaterThan(0);
+    expect($job->queue)->toBe('enrichment');
 });

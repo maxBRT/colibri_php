@@ -1,8 +1,0 @@
-node_modules
-build
-.docusaurus
-npm-debug.log*
-Dockerfile*
-README.md
-.git
-.github

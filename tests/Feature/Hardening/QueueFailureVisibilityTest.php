@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\GenerateDescriptionsJob;
+use App\Jobs\GenerateDescriptionForPostJob;
 use App\Models\Post;
 use App\Models\Source;
 use App\Services\EnrichmentService;
@@ -26,7 +26,7 @@ it('failed queued jobs are visible in failed_jobs with queue metadata', function
         'description' => null,
     ]);
 
-    $job = new GenerateDescriptionsJob;
+    $job = new GenerateDescriptionForPostJob($post);
     $job->backoff = []; // Remove backoff delays for testing
     dispatch($job);
 
@@ -43,5 +43,5 @@ it('failed queued jobs are visible in failed_jobs with queue metadata', function
     ]);
 
     $failedJob = DB::table('failed_jobs')->first();
-    expect($failedJob->payload)->toContain('GenerateDescriptionsJob');
+    expect($failedJob->payload)->toContain('GenerateDescriptionForPostJob');
 });
