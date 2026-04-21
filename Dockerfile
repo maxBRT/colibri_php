@@ -6,6 +6,7 @@ FROM dunglas/frankenphp:1-php8.4-alpine
 # Install system dependencies
 RUN apk add --no-cache \
     curl \
+    libpq-dev \
     git \
     unzip \
     libzip-dev \
