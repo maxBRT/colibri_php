@@ -3,10 +3,11 @@
 
 FROM dunglas/frankenphp:1-php8.4-alpine
 
+RUN apt-get update && apt-get install -y libpq-dev
+
 # Install system dependencies
 RUN apk add --no-cache \
     curl \
-    libpq-dev \
     git \
     unzip \
     libzip-dev \
