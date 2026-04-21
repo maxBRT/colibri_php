@@ -11,6 +11,8 @@ class PostsDescribeCommand extends Command
 
     protected $description = 'Dispatch AI description generation job for pending posts';
 
+    protected $timeout = 300;
+
     public function handle(): int
     {
         $rawLimit = $this->option('limit');
