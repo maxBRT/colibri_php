@@ -13,4 +13,5 @@ COPY --from=builder /app/build ./build
 
 # Dokploy will point Traefik to this port
 EXPOSE 80
-CMD ["serve", "-s", "build", "-l", "80"]
+
+CMD ["serve", "-s", "build", "-l", "80", "-a", "0.0.0.0"]
