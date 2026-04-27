@@ -118,6 +118,22 @@ test('GET v1 posts accepts per page max 100', function () {
         ->assertSuccessful();
 });
 
+test('GET v1 posts supports hours filter', function () {
+    $this->getJson('/v1/posts?hours=12')
+        ->assertSuccessful()
+        ->assertJson(fn (AssertableJson $json) => $json->has('posts', 1)
+            ->has('posts.0', fn (AssertableJson $json) => $json->where('title', 'News Post')
+                ->etc()
+            )
+            ->etc()
+        );
+});
+
+test('GET v1 posts rejects invalid hours lower bound', function () {
+    $this->getJson('/v1/posts?hours=0')
+        ->assertStatus(422);
+});
+
 test('GET health returns basic healthy response', function () {
     $this->getJson('/health')
         ->assertSuccessful()

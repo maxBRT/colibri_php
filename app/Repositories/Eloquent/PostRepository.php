@@ -12,10 +12,14 @@ class PostRepository implements PostRepositoryInterface
     public function paginate(array $filters, int $page, int $perPage): LengthAwarePaginator
     {
         $sourceIds = $filters['sources'] ?? [];
+        $hours = $filters['hours'] ?? null;
 
         return Post::query()
             ->when($sourceIds !== [], function ($query) use ($sourceIds) {
                 $query->whereIn('source_id', $sourceIds);
+            })
+            ->when($hours !== null, function ($query) use ($hours) {
+                $query->where('pub_date', '>=', now()->subHours($hours));
             })
             ->orderByDesc('pub_date')
             ->paginate(perPage: $perPage, page: $page);

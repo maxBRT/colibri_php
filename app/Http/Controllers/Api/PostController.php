@@ -15,7 +15,7 @@ class PostController extends Controller
     public function index(ListPostsRequest $request): JsonResponse
     {
         $posts = $this->postRepository->paginate(
-            filters: ['sources' => $request->sources()],
+            filters: ['sources' => $request->sources(), 'hours' => $request->hours()],
             page: $request->pageNumber(),
             perPage: $request->perPage(),
         );
