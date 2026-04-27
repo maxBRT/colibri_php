@@ -52,6 +52,7 @@ class FetchRssJob implements ShouldQueue
                         'guid' => $entry['guid'],
                         'pub_date' => $entry['pub_date'],
                         'source_id' => $source->id,
+                        'category' => $source->category,
                         'status' => 'processing',
                     ]);
                 }
