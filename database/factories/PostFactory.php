@@ -25,6 +25,7 @@ class PostFactory extends Factory
             'guid' => $this->faker->unique()->uuid(),
             'pub_date' => $this->faker->dateTimeThisYear(),
             'source_id' => Source::factory(),
+            'category' => $this->faker->word(),
             'status' => 'processing',
         ];
     }

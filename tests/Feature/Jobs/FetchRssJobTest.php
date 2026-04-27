@@ -44,6 +44,7 @@ test('it writes new rss items as processing posts', function () {
         'guid' => 'first-guid',
         'title' => 'First fetched post',
         'description' => null,
+        'category' => 'tech',
         'status' => 'processing',
     ]);
 
@@ -52,6 +53,7 @@ test('it writes new rss items as processing posts', function () {
         'guid' => 'second-guid',
         'title' => 'Second fetched post',
         'description' => null,
+        'category' => 'tech',
         'status' => 'processing',
     ]);
 });

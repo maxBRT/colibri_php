@@ -19,6 +19,7 @@ class Post extends Model
         'guid',
         'pub_date',
         'source_id',
+        'category',
         'status',
     ];
 
