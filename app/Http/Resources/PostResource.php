@@ -17,6 +17,7 @@ class PostResource extends JsonResource
             'guid' => $this->guid,
             'pub_date' => $this->pub_date?->toAtomString(),
             'source_id' => $this->source_id,
+            'category' => $this->category,
             'status' => $this->status,
         ];
     }
