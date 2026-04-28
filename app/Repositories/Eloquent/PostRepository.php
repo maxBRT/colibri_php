@@ -59,7 +59,7 @@ class PostRepository implements PostRepositoryInterface
     public function deleteOutdatedPosts(): void
     {
         Post::query()
-            ->where('pub_date', '<', now()->subDays(30))
+            ->where('pub_date', '<', now()->subDays(7))
             ->delete();
     }
 }

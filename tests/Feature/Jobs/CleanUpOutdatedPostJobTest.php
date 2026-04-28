@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('it deletes posts older than 30 days', function () {
+test('it deletes posts older than 7 days', function () {
     $this->travelTo(now()->startOfDay());
 
     $source = Source::query()->create([
@@ -22,7 +22,7 @@ test('it deletes posts older than 30 days', function () {
         'description' => 'outdated',
         'link' => 'https://cleanup.test/posts/old-done',
         'guid' => 'old-done-guid',
-        'pub_date' => now()->subDays(31),
+        'pub_date' => now()->subDays(8),
         'source_id' => $source->id,
         'status' => 'done',
     ]);
@@ -32,7 +32,7 @@ test('it deletes posts older than 30 days', function () {
         'description' => null,
         'link' => 'https://cleanup.test/posts/old-processing',
         'guid' => 'old-processing-guid',
-        'pub_date' => now()->subDays(45),
+        'pub_date' => now()->subDays(15),
         'source_id' => $source->id,
         'status' => 'processing',
     ]);
@@ -42,7 +42,7 @@ test('it deletes posts older than 30 days', function () {
         'description' => 'keep me',
         'link' => 'https://cleanup.test/posts/fresh',
         'guid' => 'fresh-guid',
-        'pub_date' => now()->subDays(7),
+        'pub_date' => now()->subDays(6),
         'source_id' => $source->id,
         'status' => 'done',
     ]);
@@ -55,7 +55,7 @@ test('it deletes posts older than 30 days', function () {
     $this->assertDatabaseCount('posts', 1);
 });
 
-test('it keeps posts at 30-day boundary and removes older ones', function () {
+test('it keeps posts at 7-day boundary and removes older ones', function () {
     $this->travelTo(now()->startOfSecond());
 
     $source = Source::query()->create([
@@ -70,7 +70,7 @@ test('it keeps posts at 30-day boundary and removes older ones', function () {
         'description' => 'on edge',
         'link' => 'https://boundary.test/posts/boundary',
         'guid' => 'boundary-guid',
-        'pub_date' => now()->subDays(30),
+        'pub_date' => now()->subDays(7),
         'source_id' => $source->id,
         'status' => 'done',
     ]);
@@ -80,7 +80,7 @@ test('it keeps posts at 30-day boundary and removes older ones', function () {
         'description' => 'just outside retention',
         'link' => 'https://boundary.test/posts/just-outdated',
         'guid' => 'just-outdated-guid',
-        'pub_date' => now()->subDays(31),
+        'pub_date' => now()->subDays(8),
         'source_id' => $source->id,
         'status' => 'done',
     ]);
@@ -106,7 +106,7 @@ test('it is idempotent when cleanup job runs more than once', function () {
         'description' => 'delete once',
         'link' => 'https://idempotent.test/posts/old',
         'guid' => 'idempotent-old-guid',
-        'pub_date' => now()->subDays(90),
+        'pub_date' => now()->subDays(10),
         'source_id' => $source->id,
         'status' => 'done',
     ]);
