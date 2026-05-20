@@ -112,7 +112,7 @@ return [
             'driver' => 'groq',
             'key' => env('MOONSHOT_API_KEY'),
             'url' => env('MOONSHOT_URL', 'https://api.moonshot.ai/v1'),
-            'model' => env('MOONSHOT_MODEL', 'kimi-k2-turbo-preview'),
+            'model' => env('MOONSHOT_MODEL', 'kimi-k2.5'),
             'retries' => (int) env('MOONSHOT_RETRIES', 3),
             'retry_sleep_ms' => (int) env('MOONSHOT_RETRY_SLEEP_MS', 200),
             'timeout' => (int) env('MOONSHOT_TIMEOUT', 30),
