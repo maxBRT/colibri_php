@@ -4,6 +4,9 @@ use App\Ai\Agents\MetadataDescriptionAgent;
 use App\Ai\Tools\FetchUrl;
 use App\Models\Post;
 use App\Services\EnrichmentService;
+use GuzzleHttp\Psr7\Response as PsrResponse;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Exceptions\RateLimitedException;
@@ -242,4 +245,35 @@ test('it does not report expected moonshot rate limit failures', function () {
     app(EnrichmentService::class)->generateSummary($post);
 
     Exceptions::assertNothingReported();
+});
+
+test('it honors moonshot retry-after hints when rate limited', function () {
+    $attempts = 0;
+    $startedAt = microtime(true);
+
+    MetadataDescriptionAgent::fake(function () use (&$attempts) {
+        $attempts++;
+
+        $response = new Response(new PsrResponse(
+            429,
+            [],
+            '{"error":{"message":"please try again after 1 seconds","type":"rate_limit_reached_error"}}'
+        ));
+
+        throw RateLimitedException::forProvider(
+            'moonshot',
+            0,
+            new RequestException($response),
+        );
+    });
+
+    $post = Post::make([
+        'title' => 'Retry after post',
+        'link' => 'https://example.test/posts/retry-after',
+    ]);
+
+    app(EnrichmentService::class)->generateSummary($post);
+
+    expect($attempts)->toBe(3)
+        ->and(microtime(true) - $startedAt)->toBeGreaterThan(1.5);
 });

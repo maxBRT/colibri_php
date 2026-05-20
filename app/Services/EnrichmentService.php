@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Ai\Agents\MetadataDescriptionAgent;
 use App\Ai\Tools\FetchUrl;
 use App\Models\Post;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -116,7 +117,17 @@ class EnrichmentService
     private function retryDelayMilliseconds(Throwable $exception, int $defaultDelayMilliseconds): int
     {
         if ($exception instanceof RateLimitedException) {
+            $providerBody = $this->providerErrorContext($exception)['provider_body'] ?? '';
+
+            if (preg_match('/after (\d+) seconds?/i', $providerBody, $matches) === 1) {
+                return max($defaultDelayMilliseconds, ((int) $matches[1] + 1) * 1000);
+            }
+
             return max($defaultDelayMilliseconds, 5000);
+        }
+
+        if ($exception instanceof ConnectionException) {
+            return max($defaultDelayMilliseconds, 3000);
         }
 
         return $defaultDelayMilliseconds;

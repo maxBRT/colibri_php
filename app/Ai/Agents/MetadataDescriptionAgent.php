@@ -43,6 +43,6 @@ PROMPT;
 
     public function timeout(): int
     {
-        return (int) config('ai.providers.moonshot.timeout', 30);
+        return (int) config('ai.providers.moonshot.timeout', 60);
     }
 }
