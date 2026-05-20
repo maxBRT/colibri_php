@@ -40,7 +40,7 @@ PROMPT;
 
     public function model(): string
     {
-        return (string) config('ai.providers.moonshot.model', 'kimi-k2-turbo-preview');
+        return (string) config('ai.providers.moonshot.model', 'kimi-k2.5');
     }
 
     public function timeout(): int

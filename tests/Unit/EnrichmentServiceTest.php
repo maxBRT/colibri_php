@@ -12,7 +12,7 @@ uses(TestCase::class);
 beforeEach(function () {
     config()->set('ai.default', 'moonshot');
     config()->set('ai.providers.moonshot.driver', 'groq');
-    config()->set('ai.providers.moonshot.model', 'kimi-k2-turbo-preview');
+    config()->set('ai.providers.moonshot.model', 'kimi-k2.5');
     config()->set('ai.providers.moonshot.retries', 3);
     config()->set('ai.providers.moonshot.retry_sleep_ms', 0);
 });
