@@ -1,7 +1,6 @@
 <?php
 
 use App\Ai\Agents\MetadataDescriptionAgent;
-use App\Ai\Tools\FetchUrl;
 use App\Models\Post;
 use App\Services\EnrichmentService;
 use GuzzleHttp\Psr7\Response as PsrResponse;
@@ -15,22 +14,21 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 beforeEach(function () {
-    config()->set('ai.default', 'moonshot');
-    config()->set('ai.providers.moonshot.driver', 'groq');
-    config()->set('ai.providers.moonshot.model', 'kimi-k2.5');
-    config()->set('ai.providers.moonshot.retries', 3);
-    config()->set('ai.providers.moonshot.retry_sleep_ms', 0);
-
-    $this->mock(FetchUrl::class, function ($mock) {
-        $mock->shouldReceive('fetch')->andReturn('Sample article content for testing.');
-    });
+    config()->set('ai.default', 'anthropic');
+    config()->set('ai.providers.anthropic.model', 'claude-haiku-4-5-20251001');
+    config()->set('ai.providers.anthropic.retries', 3);
+    config()->set('ai.providers.anthropic.retry_sleep_ms', 0);
 });
 
-test('moonshot provider uses chat completions compatible driver', function () {
-    expect(config('ai.providers.moonshot.driver'))->toBe('groq');
+test('metadata agent uses anthropic provider with web fetch tool', function () {
+    $agent = new MetadataDescriptionAgent;
+
+    expect($agent->provider())->toBe('anthropic')
+        ->and($agent->model())->toBe('claude-haiku-4-5-20251001')
+        ->and($agent->tools())->toHaveCount(1);
 });
 
-test('it returns summary string when kimi responds successfully', function () {
+test('it returns summary string when anthropic responds successfully', function () {
     MetadataDescriptionAgent::fake(['This is a generated summary.']);
 
     $post = Post::make([
@@ -43,14 +41,7 @@ test('it returns summary string when kimi responds successfully', function () {
     expect($summary)->toBe('This is a generated summary.');
 });
 
-test('it sends expected payload to kimi', function () {
-    $this->mock(FetchUrl::class, function ($mock) {
-        $mock->shouldReceive('fetch')
-            ->once()
-            ->with('https://example.test/posts/payload')
-            ->andReturn('Fetched article body for testing.');
-    });
-
+test('it sends expected payload to anthropic', function () {
     MetadataDescriptionAgent::fake(['Summary payload check.']);
 
     $post = Post::make([
@@ -62,8 +53,7 @@ test('it sends expected payload to kimi', function () {
 
     MetadataDescriptionAgent::assertPrompted(function ($prompt) {
         return $prompt->contains('Payload post')
-            && $prompt->contains('https://example.test/posts/payload')
-            && $prompt->contains('Fetched article body for testing.');
+            && $prompt->contains('https://example.test/posts/payload');
     });
 });
 
@@ -73,7 +63,7 @@ test('it retries and returns null on repeated network exception', function () {
     MetadataDescriptionAgent::fake(function () use (&$attempts) {
         $attempts++;
 
-        throw new RuntimeException('Kimi unavailable');
+        throw new RuntimeException('Anthropic unavailable');
     });
 
     $post = Post::make([
@@ -156,7 +146,7 @@ test('it returns null on empty or whitespace summary', function () {
     expect($summary)->toBeNull();
 });
 
-test('it logs success when kimi responds with a usable summary', function () {
+test('it logs success when anthropic responds with a usable summary', function () {
     Log::partialMock()
         ->shouldReceive('info')
         ->once()
@@ -178,7 +168,7 @@ test('it logs success when kimi responds with a usable summary', function () {
     app(EnrichmentService::class)->generateSummary($post);
 });
 
-test('it logs warning when kimi returns no usable description', function () {
+test('it logs warning when anthropic returns no usable description', function () {
     Log::partialMock()
         ->shouldReceive('warning')
         ->once()
@@ -206,18 +196,18 @@ test('it logs retry attempts and final failure when all retries are exhausted', 
         ->times(3)
         ->withArgs(function (string $message, array $context): bool {
             if ($message === 'LLM enrichment attempt failed, retrying.') {
-                return $context['error'] === 'Kimi unavailable'
+                return $context['error'] === 'Anthropic unavailable'
                     && $context['exception'] === RuntimeException::class;
             }
 
             return $message === 'LLM enrichment failed after all retries.'
                 && $context['attempts'] === 3
-                && $context['error'] === 'Kimi unavailable'
+                && $context['error'] === 'Anthropic unavailable'
                 && $context['exception'] === RuntimeException::class;
         });
 
     MetadataDescriptionAgent::fake(function () {
-        throw new RuntimeException('Kimi unavailable');
+        throw new RuntimeException('Anthropic unavailable');
     });
 
     $post = Post::make([
@@ -230,11 +220,11 @@ test('it logs retry attempts and final failure when all retries are exhausted', 
     Exceptions::assertReported(RuntimeException::class);
 });
 
-test('it does not report expected moonshot rate limit failures', function () {
+test('it does not report expected anthropic rate limit failures', function () {
     Exceptions::fake();
 
     MetadataDescriptionAgent::fake(function () {
-        throw RateLimitedException::forProvider('moonshot');
+        throw RateLimitedException::forProvider('anthropic');
     });
 
     $post = Post::make([
@@ -247,7 +237,7 @@ test('it does not report expected moonshot rate limit failures', function () {
     Exceptions::assertNothingReported();
 });
 
-test('it honors moonshot retry-after hints when rate limited', function () {
+test('it honors anthropic retry-after hints when rate limited', function () {
     $attempts = 0;
     $startedAt = microtime(true);
 
@@ -261,7 +251,7 @@ test('it honors moonshot retry-after hints when rate limited', function () {
         ));
 
         throw RateLimitedException::forProvider(
-            'moonshot',
+            'anthropic',
             0,
             new RequestException($response),
         );

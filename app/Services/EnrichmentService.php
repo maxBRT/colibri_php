@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Ai\Agents\MetadataDescriptionAgent;
-use App\Ai\Tools\FetchUrl;
 use App\Models\Post;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
@@ -14,12 +13,10 @@ use Throwable;
 
 class EnrichmentService
 {
-    public function __construct(private FetchUrl $fetchUrl) {}
-
     public function generateSummary(Post $post): ?string
     {
-        $attempts = max(1, (int) config('ai.providers.moonshot.retries', 3));
-        $retrySleepMilliseconds = max(0, (int) config('ai.providers.moonshot.retry_sleep_ms', 2000));
+        $attempts = max(1, (int) config('ai.providers.anthropic.retries', 3));
+        $retrySleepMilliseconds = max(0, (int) config('ai.providers.anthropic.retry_sleep_ms', 2000));
         $context = $this->logContext($post);
 
         for ($attempt = 1; $attempt <= $attempts; $attempt++) {
@@ -135,16 +132,11 @@ class EnrichmentService
 
     private function buildPrompt(Post $post): string
     {
-        $pageContent = $this->fetchUrl->fetch($post->link);
-
         return <<<PROMPT
 Generate metadata description for article.
 
 Title: {$post->title}
 URL: {$post->link}
-
-Article content:
-{$pageContent}
 PROMPT;
     }
 }
