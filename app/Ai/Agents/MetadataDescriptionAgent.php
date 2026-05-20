@@ -2,13 +2,13 @@
 
 namespace App\Ai\Agents;
 
+use App\Ai\Tools\FetchUrl;
 use Laravel\Ai\Contracts\Agent;
-use Laravel\Ai\Enums\Lab;
+use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Promptable;
-use Laravel\Ai\Providers\Tools\WebFetch;
 use Stringable;
 
-class MetadataDescriptionAgent implements Agent
+class MetadataDescriptionAgent implements Agent, HasTools
 {
     use Promptable;
 
@@ -20,7 +20,7 @@ class MetadataDescriptionAgent implements Agent
         return <<<'PROMPT'
 You are a Professional Meta-Data Specialist.
 
-Analyze text content from provided URL.
+Use the fetch_url tool to read the article at the provided URL before writing the description.
 
 Constraints:
 - Length: total response under 100 words.
@@ -33,25 +33,25 @@ Output structure:
 PROMPT;
     }
 
-    public function provider(): Lab|string|array
+    public function provider(): string
     {
-        return 'gemini';
+        return 'moonshot';
     }
 
     public function model(): string
     {
-        return (string) config('ai.providers.gemini.model', 'gemini-2.5-flash');
+        return (string) config('ai.providers.moonshot.model', 'kimi-k2-turbo-preview');
     }
 
     public function timeout(): int
     {
-        return (int) config('ai.providers.gemini.timeout', 30);
+        return (int) config('ai.providers.moonshot.timeout', 30);
     }
 
     public function tools(): iterable
     {
         return [
-            new WebFetch,
+            new FetchUrl,
         ];
     }
 }

@@ -108,6 +108,17 @@ return [
             'url' => env('MISTRAL_URL', 'https://api.mistral.ai/v1'),
         ],
 
+        'moonshot' => [
+            'driver' => 'openai',
+            'key' => env('MOONSHOT_API_KEY'),
+            'url' => env('MOONSHOT_URL', 'https://api.moonshot.ai/v1'),
+            'model' => env('MOONSHOT_MODEL', 'kimi-k2-turbo-preview'),
+            'retries' => (int) env('MOONSHOT_RETRIES', 3),
+            'retry_sleep_ms' => (int) env('MOONSHOT_RETRY_SLEEP_MS', 200),
+            'timeout' => (int) env('MOONSHOT_TIMEOUT', 30),
+            'connect_timeout' => (int) env('MOONSHOT_CONNECT_TIMEOUT', 10),
+        ],
+
         'ollama' => [
             'driver' => 'ollama',
             'key' => env('OLLAMA_API_KEY', ''),

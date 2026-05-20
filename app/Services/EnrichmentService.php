@@ -11,8 +11,8 @@ class EnrichmentService
 {
     public function generateSummary(Post $post): ?string
     {
-        $attempts = max(1, (int) config('ai.providers.gemini.retries', 3));
-        $retrySleepMilliseconds = max(0, (int) config('ai.providers.gemini.retry_sleep_ms', 200));
+        $attempts = max(1, (int) config('ai.providers.moonshot.retries', 3));
+        $retrySleepMilliseconds = max(0, (int) config('ai.providers.moonshot.retry_sleep_ms', 200));
         $context = $this->logContext($post);
 
         for ($attempt = 1; $attempt <= $attempts; $attempt++) {

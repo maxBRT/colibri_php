@@ -10,13 +10,13 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 beforeEach(function () {
-    config()->set('ai.default', 'gemini');
-    config()->set('ai.providers.gemini.model', 'gemini-2.5-flash');
-    config()->set('ai.providers.gemini.retries', 3);
-    config()->set('ai.providers.gemini.retry_sleep_ms', 0);
+    config()->set('ai.default', 'moonshot');
+    config()->set('ai.providers.moonshot.model', 'kimi-k2-turbo-preview');
+    config()->set('ai.providers.moonshot.retries', 3);
+    config()->set('ai.providers.moonshot.retry_sleep_ms', 0);
 });
 
-test('it returns summary string when gemini responds successfully', function () {
+test('it returns summary string when kimi responds successfully', function () {
     MetadataDescriptionAgent::fake(['This is a generated summary.']);
 
     $post = Post::make([
@@ -29,7 +29,7 @@ test('it returns summary string when gemini responds successfully', function () 
     expect($summary)->toBe('This is a generated summary.');
 });
 
-test('it sends expected payload to gemini', function () {
+test('it sends expected payload to kimi', function () {
     MetadataDescriptionAgent::fake(['Summary payload check.']);
 
     $post = Post::make([
@@ -51,7 +51,7 @@ test('it retries and returns null on repeated network exception', function () {
     MetadataDescriptionAgent::fake(function () use (&$attempts) {
         $attempts++;
 
-        throw new RuntimeException('Gemini unavailable');
+        throw new RuntimeException('Kimi unavailable');
     });
 
     $post = Post::make([
@@ -134,7 +134,7 @@ test('it returns null on empty or whitespace summary', function () {
     expect($summary)->toBeNull();
 });
 
-test('it logs success when gemini responds with a usable summary', function () {
+test('it logs success when kimi responds with a usable summary', function () {
     Log::partialMock()
         ->shouldReceive('info')
         ->once()
@@ -156,7 +156,7 @@ test('it logs success when gemini responds with a usable summary', function () {
     app(EnrichmentService::class)->generateSummary($post);
 });
 
-test('it logs warning when gemini returns no usable description', function () {
+test('it logs warning when kimi returns no usable description', function () {
     Log::partialMock()
         ->shouldReceive('warning')
         ->once()
@@ -184,18 +184,18 @@ test('it logs retry attempts and final failure when all retries are exhausted', 
         ->times(3)
         ->withArgs(function (string $message, array $context): bool {
             if ($message === 'LLM enrichment attempt failed, retrying.') {
-                return $context['error'] === 'Gemini unavailable'
+                return $context['error'] === 'Kimi unavailable'
                     && $context['exception'] === RuntimeException::class;
             }
 
             return $message === 'LLM enrichment failed after all retries.'
                 && $context['attempts'] === 3
-                && $context['error'] === 'Gemini unavailable'
+                && $context['error'] === 'Kimi unavailable'
                 && $context['exception'] === RuntimeException::class;
         });
 
     MetadataDescriptionAgent::fake(function () {
-        throw new RuntimeException('Gemini unavailable');
+        throw new RuntimeException('Kimi unavailable');
     });
 
     $post = Post::make([
