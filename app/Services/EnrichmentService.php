@@ -3,16 +3,22 @@
 namespace App\Services;
 
 use App\Ai\Agents\MetadataDescriptionAgent;
+use App\Ai\Tools\FetchUrl;
 use App\Models\Post;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Laravel\Ai\Exceptions\RateLimitedException;
 use Throwable;
 
 class EnrichmentService
 {
+    public function __construct(private FetchUrl $fetchUrl) {}
+
     public function generateSummary(Post $post): ?string
     {
         $attempts = max(1, (int) config('ai.providers.moonshot.retries', 3));
-        $retrySleepMilliseconds = max(0, (int) config('ai.providers.moonshot.retry_sleep_ms', 200));
+        $retrySleepMilliseconds = max(0, (int) config('ai.providers.moonshot.retry_sleep_ms', 2000));
         $context = $this->logContext($post);
 
         for ($attempt = 1; $attempt <= $attempts; $attempt++) {
@@ -41,27 +47,33 @@ class EnrichmentService
 
                 return $summary;
             } catch (Throwable $exception) {
+                $errorContext = [
+                    ...$context,
+                    'error' => $exception->getMessage(),
+                    'exception' => $exception::class,
+                    ...$this->providerErrorContext($exception),
+                ];
+
                 if ($attempt === $attempts) {
-                    report($exception);
+                    if (! $exception instanceof RateLimitedException) {
+                        report($exception);
+                    }
 
                     Log::warning('LLM enrichment failed after all retries.', [
-                        ...$context,
+                        ...$errorContext,
                         'attempts' => $attempts,
-                        'error' => $exception->getMessage(),
-                        'exception' => $exception::class,
                     ]);
 
                     return null;
                 }
 
                 Log::warning('LLM enrichment attempt failed, retrying.', [
-                    ...$context,
+                    ...$errorContext,
                     'attempt' => $attempt,
-                    'error' => $exception->getMessage(),
-                    'exception' => $exception::class,
+                    'retry_in_ms' => $this->retryDelayMilliseconds($exception, $retrySleepMilliseconds),
                 ]);
 
-                usleep($retrySleepMilliseconds * 1000);
+                usleep($this->retryDelayMilliseconds($exception, $retrySleepMilliseconds) * 1000);
             }
         }
 
@@ -80,13 +92,48 @@ class EnrichmentService
         ], fn ($value) => $value !== null && $value !== '');
     }
 
+    /**
+     * @return array{provider_status?: int, provider_body?: string}
+     */
+    private function providerErrorContext(Throwable $exception): array
+    {
+        $previous = $exception;
+
+        while ($previous !== null) {
+            if ($previous instanceof RequestException && $previous->response !== null) {
+                return [
+                    'provider_status' => $previous->response->status(),
+                    'provider_body' => Str::limit((string) $previous->response->body(), 500),
+                ];
+            }
+
+            $previous = $previous->getPrevious();
+        }
+
+        return [];
+    }
+
+    private function retryDelayMilliseconds(Throwable $exception, int $defaultDelayMilliseconds): int
+    {
+        if ($exception instanceof RateLimitedException) {
+            return max($defaultDelayMilliseconds, 5000);
+        }
+
+        return $defaultDelayMilliseconds;
+    }
+
     private function buildPrompt(Post $post): string
     {
+        $pageContent = $this->fetchUrl->fetch($post->link);
+
         return <<<PROMPT
 Generate metadata description for article.
 
 Title: {$post->title}
 URL: {$post->link}
+
+Article content:
+{$pageContent}
 PROMPT;
     }
 }
