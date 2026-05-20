@@ -1,6 +1,7 @@
 <?php
 
 use App\Ai\Agents\MetadataDescriptionAgent;
+use App\Ai\Tools\FetchUrl;
 use App\Models\Post;
 use App\Services\EnrichmentService;
 use Illuminate\Support\Facades\Exceptions;
@@ -15,6 +16,10 @@ beforeEach(function () {
     config()->set('ai.providers.moonshot.model', 'kimi-k2.5');
     config()->set('ai.providers.moonshot.retries', 3);
     config()->set('ai.providers.moonshot.retry_sleep_ms', 0);
+
+    $this->mock(FetchUrl::class, function ($mock) {
+        $mock->shouldReceive('fetch')->andReturn('Sample article content for testing.');
+    });
 });
 
 test('moonshot provider uses chat completions compatible driver', function () {
@@ -35,6 +40,13 @@ test('it returns summary string when kimi responds successfully', function () {
 });
 
 test('it sends expected payload to kimi', function () {
+    $this->mock(FetchUrl::class, function ($mock) {
+        $mock->shouldReceive('fetch')
+            ->once()
+            ->with('https://example.test/posts/payload')
+            ->andReturn('Fetched article body for testing.');
+    });
+
     MetadataDescriptionAgent::fake(['Summary payload check.']);
 
     $post = Post::make([
@@ -46,7 +58,8 @@ test('it sends expected payload to kimi', function () {
 
     MetadataDescriptionAgent::assertPrompted(function ($prompt) {
         return $prompt->contains('Payload post')
-            && $prompt->contains('https://example.test/posts/payload');
+            && $prompt->contains('https://example.test/posts/payload')
+            && $prompt->contains('Fetched article body for testing.');
     });
 });
 

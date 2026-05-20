@@ -2,13 +2,11 @@
 
 namespace App\Ai\Agents;
 
-use App\Ai\Tools\FetchUrl;
 use Laravel\Ai\Contracts\Agent;
-use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-class MetadataDescriptionAgent implements Agent, HasTools
+class MetadataDescriptionAgent implements Agent
 {
     use Promptable;
 
@@ -20,7 +18,7 @@ class MetadataDescriptionAgent implements Agent, HasTools
         return <<<'PROMPT'
 You are a Professional Meta-Data Specialist.
 
-Use the fetch_url tool to read the article at the provided URL before writing the description.
+Write a description using the article title, URL, and provided page content.
 
 Constraints:
 - Length: total response under 100 words.
@@ -46,12 +44,5 @@ PROMPT;
     public function timeout(): int
     {
         return (int) config('ai.providers.moonshot.timeout', 30);
-    }
-
-    public function tools(): iterable
-    {
-        return [
-            new FetchUrl,
-        ];
     }
 }
