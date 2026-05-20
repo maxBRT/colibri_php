@@ -109,7 +109,7 @@ return [
         ],
 
         'moonshot' => [
-            'driver' => 'openai',
+            'driver' => 'groq',
             'key' => env('MOONSHOT_API_KEY'),
             'url' => env('MOONSHOT_URL', 'https://api.moonshot.ai/v1'),
             'model' => env('MOONSHOT_MODEL', 'kimi-k2-turbo-preview'),
