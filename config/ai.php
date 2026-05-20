@@ -115,7 +115,8 @@ return [
             'model' => env('MOONSHOT_MODEL', 'kimi-k2.5'),
             'retries' => (int) env('MOONSHOT_RETRIES', 3),
             'retry_sleep_ms' => (int) env('MOONSHOT_RETRY_SLEEP_MS', 2000),
-            'timeout' => (int) env('MOONSHOT_TIMEOUT', 30),
+            'rpm_limit' => (int) env('MOONSHOT_RPM_LIMIT', 18),
+            'timeout' => (int) env('MOONSHOT_TIMEOUT', 60),
             'connect_timeout' => (int) env('MOONSHOT_CONNECT_TIMEOUT', 10),
         ],
 

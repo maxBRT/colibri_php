@@ -7,6 +7,7 @@ use App\Repositories\Contracts\PostRepositoryInterface;
 use App\Services\EnrichmentService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\RateLimited;
 
 class GenerateDescriptionForPostJob implements ShouldQueue
 {
@@ -25,6 +26,16 @@ class GenerateDescriptionForPostJob implements ShouldQueue
     {
         $this->onConnection('database');
         $this->onQueue('enrichment');
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [
+            new RateLimited('moonshot-enrichment'),
+        ];
     }
 
     public function handle(PostRepositoryInterface $posts, EnrichmentService $enrichment): void

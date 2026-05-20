@@ -5,6 +5,7 @@ use App\Models\Post;
 use App\Models\Source;
 use App\Services\EnrichmentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Queue\Middleware\RateLimited;
 
 uses(RefreshDatabase::class);
 
@@ -66,6 +67,30 @@ test('it keeps post processing with null description when enrichment returns nul
 
     expect($post->status)->toBe('processing')
         ->and($post->description)->toBeNull();
+});
+
+test('it rate limits enrichment jobs for moonshot rpm limits', function () {
+    $source = Source::query()->create([
+        'id' => 'source-rate-limit',
+        'name' => 'Rate Limit Source',
+        'url' => 'https://example.test/rate.xml',
+        'category' => 'tech',
+    ]);
+
+    $post = Post::query()->create([
+        'title' => 'Rate limited post',
+        'description' => null,
+        'link' => 'https://example.test/posts/rate',
+        'guid' => 'rate-guid',
+        'pub_date' => now(),
+        'source_id' => $source->id,
+        'status' => 'processing',
+    ]);
+
+    $middleware = (new GenerateDescriptionForPostJob($post))->middleware();
+
+    expect($middleware)->toHaveCount(1)
+        ->and($middleware[0])->toBeInstanceOf(RateLimited::class);
 });
 
 test('it defines enrichment queue and retry configuration', function () {
