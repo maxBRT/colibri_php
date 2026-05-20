@@ -59,6 +59,7 @@ return [
             'retry_sleep_ms' => (int) env('ANTHROPIC_RETRY_SLEEP_MS', 2000),
             'timeout' => (int) env('ANTHROPIC_TIMEOUT', 60),
             'connect_timeout' => (int) env('ANTHROPIC_CONNECT_TIMEOUT', 10),
+            'rpm_limit' => (int) env('ANTHROPIC_RPM_LIMIT', 5),
         ],
 
         'azure' => [

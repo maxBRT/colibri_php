@@ -7,6 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Laravel\Ai\Exceptions\RateLimitedException;
 use Throwable;
@@ -71,7 +72,7 @@ class EnrichmentService
                     'retry_in_ms' => $this->retryDelayMilliseconds($exception, $retrySleepMilliseconds),
                 ]);
 
-                usleep($this->retryDelayMilliseconds($exception, $retrySleepMilliseconds) * 1000);
+                Sleep::usleep($this->retryDelayMilliseconds($exception, $retrySleepMilliseconds) * 1000);
             }
         }
 
@@ -118,6 +119,10 @@ class EnrichmentService
 
             if (preg_match('/after (\d+) seconds?/i', $providerBody, $matches) === 1) {
                 return max($defaultDelayMilliseconds, ((int) $matches[1] + 1) * 1000);
+            }
+
+            if (str_contains(strtolower($providerBody), 'input tokens per minute')) {
+                return max($defaultDelayMilliseconds, 60_000);
             }
 
             return max($defaultDelayMilliseconds, 5000);
