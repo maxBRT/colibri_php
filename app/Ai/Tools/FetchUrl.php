@@ -25,7 +25,12 @@ class FetchUrl implements Tool
      */
     public function handle(Request $request): Stringable|string
     {
-        $url = trim($request->string('url'));
+        return $this->fetch($request->string('url'));
+    }
+
+    public function fetch(string $url): string
+    {
+        $url = trim($url);
 
         if ($url === '' || ! filter_var($url, FILTER_VALIDATE_URL)) {
             return 'Unable to fetch URL: invalid URL provided.';
