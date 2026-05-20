@@ -3,6 +3,8 @@
 use App\Ai\Agents\MetadataDescriptionAgent;
 use App\Models\Post;
 use App\Services\EnrichmentService;
+use Illuminate\Support\Facades\Exceptions;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -130,4 +132,78 @@ test('it returns null on empty or whitespace summary', function () {
     $summary = app(EnrichmentService::class)->generateSummary($post);
 
     expect($summary)->toBeNull();
+});
+
+test('it logs success when gemini responds with a usable summary', function () {
+    Log::partialMock()
+        ->shouldReceive('info')
+        ->once()
+        ->withArgs(function (string $message, array $context): bool {
+            return $message === 'LLM enrichment succeeded.'
+                && $context['post_title'] === 'Logged success post'
+                && $context['post_link'] === 'https://example.test/posts/logged-success'
+                && $context['attempt'] === 1
+                && $context['summary_length'] === 28;
+        });
+
+    MetadataDescriptionAgent::fake(['This is a generated summary.']);
+
+    $post = Post::make([
+        'title' => 'Logged success post',
+        'link' => 'https://example.test/posts/logged-success',
+    ]);
+
+    app(EnrichmentService::class)->generateSummary($post);
+});
+
+test('it logs warning when gemini returns no usable description', function () {
+    Log::partialMock()
+        ->shouldReceive('warning')
+        ->once()
+        ->withArgs(function (string $message, array $context): bool {
+            return $message === 'LLM enrichment returned no usable description.'
+                && $context['post_title'] === 'Logged empty post'
+                && $context['response'] === 'No description available.';
+        });
+
+    MetadataDescriptionAgent::fake(['No description available.']);
+
+    $post = Post::make([
+        'title' => 'Logged empty post',
+        'link' => 'https://example.test/posts/logged-empty',
+    ]);
+
+    app(EnrichmentService::class)->generateSummary($post);
+});
+
+test('it logs retry attempts and final failure when all retries are exhausted', function () {
+    Exceptions::fake();
+
+    Log::partialMock()
+        ->shouldReceive('warning')
+        ->times(3)
+        ->withArgs(function (string $message, array $context): bool {
+            if ($message === 'LLM enrichment attempt failed, retrying.') {
+                return $context['error'] === 'Gemini unavailable'
+                    && $context['exception'] === RuntimeException::class;
+            }
+
+            return $message === 'LLM enrichment failed after all retries.'
+                && $context['attempts'] === 3
+                && $context['error'] === 'Gemini unavailable'
+                && $context['exception'] === RuntimeException::class;
+        });
+
+    MetadataDescriptionAgent::fake(function () {
+        throw new RuntimeException('Gemini unavailable');
+    });
+
+    $post = Post::make([
+        'title' => 'Logged failure post',
+        'link' => 'https://example.test/posts/logged-failure',
+    ]);
+
+    app(EnrichmentService::class)->generateSummary($post);
+
+    Exceptions::assertReported(RuntimeException::class);
 });
