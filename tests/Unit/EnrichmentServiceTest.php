@@ -15,22 +15,24 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 beforeEach(function () {
-    config()->set('ai.default', 'moonshot');
-    config()->set('ai.providers.moonshot.driver', 'groq');
-    config()->set('ai.providers.moonshot.model', 'kimi-k2.5');
-    config()->set('ai.providers.moonshot.retries', 3);
-    config()->set('ai.providers.moonshot.retry_sleep_ms', 0);
+    config()->set('ai.default', 'openai');
+    config()->set('ai.providers.openai.model', 'gpt-4o-mini');
+    config()->set('ai.providers.openai.retries', 3);
+    config()->set('ai.providers.openai.retry_sleep_ms', 0);
 
     $this->mock(FetchUrl::class, function ($mock) {
         $mock->shouldReceive('fetch')->andReturn('Sample article content for testing.');
     });
 });
 
-test('moonshot provider uses chat completions compatible driver', function () {
-    expect(config('ai.providers.moonshot.driver'))->toBe('groq');
+test('metadata agent uses openai provider', function () {
+    $agent = new MetadataDescriptionAgent;
+
+    expect($agent->provider())->toBe('openai')
+        ->and($agent->model())->toBe('gpt-4o-mini');
 });
 
-test('it returns summary string when kimi responds successfully', function () {
+test('it returns summary string when openai responds successfully', function () {
     MetadataDescriptionAgent::fake(['This is a generated summary.']);
 
     $post = Post::make([
@@ -43,7 +45,7 @@ test('it returns summary string when kimi responds successfully', function () {
     expect($summary)->toBe('This is a generated summary.');
 });
 
-test('it sends expected payload to kimi', function () {
+test('it sends expected payload to openai', function () {
     $this->mock(FetchUrl::class, function ($mock) {
         $mock->shouldReceive('fetch')
             ->once()
@@ -73,7 +75,7 @@ test('it retries and returns null on repeated network exception', function () {
     MetadataDescriptionAgent::fake(function () use (&$attempts) {
         $attempts++;
 
-        throw new RuntimeException('Kimi unavailable');
+        throw new RuntimeException('OpenAI unavailable');
     });
 
     $post = Post::make([
@@ -156,7 +158,7 @@ test('it returns null on empty or whitespace summary', function () {
     expect($summary)->toBeNull();
 });
 
-test('it logs success when kimi responds with a usable summary', function () {
+test('it logs success when openai responds with a usable summary', function () {
     Log::partialMock()
         ->shouldReceive('info')
         ->once()
@@ -178,7 +180,7 @@ test('it logs success when kimi responds with a usable summary', function () {
     app(EnrichmentService::class)->generateSummary($post);
 });
 
-test('it logs warning when kimi returns no usable description', function () {
+test('it logs warning when openai returns no usable description', function () {
     Log::partialMock()
         ->shouldReceive('warning')
         ->once()
@@ -206,18 +208,18 @@ test('it logs retry attempts and final failure when all retries are exhausted', 
         ->times(3)
         ->withArgs(function (string $message, array $context): bool {
             if ($message === 'LLM enrichment attempt failed, retrying.') {
-                return $context['error'] === 'Kimi unavailable'
+                return $context['error'] === 'OpenAI unavailable'
                     && $context['exception'] === RuntimeException::class;
             }
 
             return $message === 'LLM enrichment failed after all retries.'
                 && $context['attempts'] === 3
-                && $context['error'] === 'Kimi unavailable'
+                && $context['error'] === 'OpenAI unavailable'
                 && $context['exception'] === RuntimeException::class;
         });
 
     MetadataDescriptionAgent::fake(function () {
-        throw new RuntimeException('Kimi unavailable');
+        throw new RuntimeException('OpenAI unavailable');
     });
 
     $post = Post::make([
@@ -230,11 +232,11 @@ test('it logs retry attempts and final failure when all retries are exhausted', 
     Exceptions::assertReported(RuntimeException::class);
 });
 
-test('it does not report expected moonshot rate limit failures', function () {
+test('it does not report expected openai rate limit failures', function () {
     Exceptions::fake();
 
     MetadataDescriptionAgent::fake(function () {
-        throw RateLimitedException::forProvider('moonshot');
+        throw RateLimitedException::forProvider('openai');
     });
 
     $post = Post::make([
@@ -247,7 +249,7 @@ test('it does not report expected moonshot rate limit failures', function () {
     Exceptions::assertNothingReported();
 });
 
-test('it honors moonshot retry-after hints when rate limited', function () {
+test('it honors openai retry-after hints when rate limited', function () {
     $attempts = 0;
     $startedAt = microtime(true);
 
@@ -261,7 +263,7 @@ test('it honors moonshot retry-after hints when rate limited', function () {
         ));
 
         throw RateLimitedException::forProvider(
-            'moonshot',
+            'openai',
             0,
             new RequestException($response),
         );

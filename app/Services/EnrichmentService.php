@@ -18,8 +18,8 @@ class EnrichmentService
 
     public function generateSummary(Post $post): ?string
     {
-        $attempts = max(1, (int) config('ai.providers.moonshot.retries', 3));
-        $retrySleepMilliseconds = max(0, (int) config('ai.providers.moonshot.retry_sleep_ms', 2000));
+        $attempts = max(1, (int) config('ai.providers.openai.retries', 3));
+        $retrySleepMilliseconds = max(0, (int) config('ai.providers.openai.retry_sleep_ms', 2000));
         $context = $this->logContext($post);
 
         for ($attempt = 1; $attempt <= $attempts; $attempt++) {

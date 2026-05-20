@@ -37,8 +37,8 @@ class FetchUrl implements Tool
         }
 
         try {
-            $response = Http::connectTimeout((int) config('ai.providers.moonshot.connect_timeout', 10))
-                ->timeout((int) config('ai.providers.moonshot.timeout', 30))
+            $response = Http::connectTimeout((int) config('ai.providers.openai.connect_timeout', 10))
+                ->timeout((int) config('ai.providers.openai.timeout', 60))
                 ->withHeaders([
                     'User-Agent' => 'ColibriBot/1.0',
                 ])

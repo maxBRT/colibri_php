@@ -130,6 +130,11 @@ return [
             'driver' => 'openai',
             'key' => env('OPENAI_API_KEY'),
             'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
+            'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+            'retries' => (int) env('OPENAI_RETRIES', 3),
+            'retry_sleep_ms' => (int) env('OPENAI_RETRY_SLEEP_MS', 2000),
+            'timeout' => (int) env('OPENAI_TIMEOUT', 60),
+            'connect_timeout' => (int) env('OPENAI_CONNECT_TIMEOUT', 10),
         ],
 
         'openrouter' => [

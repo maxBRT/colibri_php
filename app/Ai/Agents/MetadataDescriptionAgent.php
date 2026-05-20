@@ -33,16 +33,16 @@ PROMPT;
 
     public function provider(): string
     {
-        return 'moonshot';
+        return 'openai';
     }
 
     public function model(): string
     {
-        return (string) config('ai.providers.moonshot.model', 'kimi-k2.5');
+        return (string) config('ai.providers.openai.model', 'gpt-4o-mini');
     }
 
     public function timeout(): int
     {
-        return (int) config('ai.providers.moonshot.timeout', 60);
+        return (int) config('ai.providers.openai.timeout', 60);
     }
 }
