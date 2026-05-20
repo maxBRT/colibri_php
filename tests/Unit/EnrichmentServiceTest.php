@@ -3,11 +3,13 @@
 use App\Ai\Agents\MetadataDescriptionAgent;
 use App\Models\Post;
 use App\Services\EnrichmentService;
+use Carbon\CarbonInterval;
 use GuzzleHttp\Psr7\Response as PsrResponse;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 use Laravel\Ai\Exceptions\RateLimitedException;
 use Tests\TestCase;
 
@@ -235,6 +237,42 @@ test('it does not report expected anthropic rate limit failures', function () {
     app(EnrichmentService::class)->generateSummary($post);
 
     Exceptions::assertNothingReported();
+});
+
+test('it waits a full minute when anthropic input token rate limit is hit', function () {
+    Sleep::fake();
+
+    $attempts = 0;
+
+    MetadataDescriptionAgent::fake(function () use (&$attempts) {
+        $attempts++;
+
+        $response = new Response(new PsrResponse(
+            429,
+            [],
+            '{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization\'s rate limit of 50,000 input tokens per minute"}}'
+        ));
+
+        throw RateLimitedException::forProvider(
+            'anthropic',
+            0,
+            new RequestException($response),
+        );
+    });
+
+    config()->set('ai.providers.anthropic.retries', 2);
+    config()->set('ai.providers.anthropic.retry_sleep_ms', 0);
+
+    $post = Post::make([
+        'title' => 'Token rate limit post',
+        'link' => 'https://example.test/posts/token-rate-limit',
+    ]);
+
+    app(EnrichmentService::class)->generateSummary($post);
+
+    expect($attempts)->toBe(2);
+
+    Sleep::assertSlept(fn (CarbonInterval $duration) => $duration->totalMilliseconds >= 60_000, times: 1);
 });
 
 test('it honors anthropic retry-after hints when rate limited', function () {
