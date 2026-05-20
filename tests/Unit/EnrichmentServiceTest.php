@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Services\EnrichmentService;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Log;
+use Laravel\Ai\Exceptions\RateLimitedException;
 use Tests\TestCase;
 
 uses(TestCase::class);
@@ -224,4 +225,21 @@ test('it logs retry attempts and final failure when all retries are exhausted', 
     app(EnrichmentService::class)->generateSummary($post);
 
     Exceptions::assertReported(RuntimeException::class);
+});
+
+test('it does not report expected moonshot rate limit failures', function () {
+    Exceptions::fake();
+
+    MetadataDescriptionAgent::fake(function () {
+        throw RateLimitedException::forProvider('moonshot');
+    });
+
+    $post = Post::make([
+        'title' => 'Rate limited post',
+        'link' => 'https://example.test/posts/rate-limited',
+    ]);
+
+    app(EnrichmentService::class)->generateSummary($post);
+
+    Exceptions::assertNothingReported();
 });

@@ -55,7 +55,9 @@ class EnrichmentService
                 ];
 
                 if ($attempt === $attempts) {
-                    report($exception);
+                    if (! $exception instanceof RateLimitedException) {
+                        report($exception);
+                    }
 
                     Log::warning('LLM enrichment failed after all retries.', [
                         ...$errorContext,
