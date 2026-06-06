@@ -14,8 +14,6 @@ How ?:
 * We generate incosistant field like description with AI agents
 * We expose everything through a versionned REST API so your apps don't break
 
-Make sure to check out the [docs](https://colibri-rss.com) !
-
 <!-- ROADMAP -->
 ## Roadmap
 
@@ -66,13 +64,6 @@ php artisan serve
 - `GET /api/v1/posts` - List posts with pagination (optionally filter by source)
 - `GET /api/health` - Health check
 
-## Documentation
-
-Full API documentation is available in the [docs](https://colibri-rss.com). 
-
-## Development
-
-See [the official docs](https://colibri-rss.com) for contribution guidelines.
 
 <!-- LICENSE -->
 ## License
